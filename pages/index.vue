@@ -1,5 +1,137 @@
 <template>
   <div class="pa-4">
+    <v-expansion-panels class="mb-4">
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          Add Course
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-form
+            ref="addCourseForm"
+            v-model="addCourseIsValid"
+            @submit.prevent
+          >
+            <v-row>
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <v-text-field
+                  v-model="addCourseName"
+                  label="Name"
+                  outlined
+                  dense
+                  :rules="courseNameRules"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <v-text-field
+                  v-model="addCourseColor"
+                  label="Color"
+                  outlined
+                  dense
+                  :rules="courseColorRules"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <DayField
+                  ref="addCourseDayField"
+                  v-model.number="addCourseDayNumber"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <TimeField
+                  ref="addCourseDayStartField"
+                  v-model="addCourseDayStart"
+                  label="Start Time"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <TimeField
+                  ref="addCourseDayEndField"
+                  v-model="addCourseDayEnd"
+                  label="End Time"
+                />
+              </v-col>
+            </v-row>
+            <div class="text-center mb-4">
+              <v-btn
+                color="primary"
+                :disabled="!addCourseDayIsValid"
+                @click="addCourseDay"
+              >
+                Add Day
+              </v-btn>
+            </div>
+            <v-row
+              no-gutters
+              justify="center"
+            >
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <v-data-table
+                  dense
+                  disable-sort
+                  hide-default-footer
+                  mobile-breakpoint="0"
+                  no-data-text="Add a day above"
+                  class="mb-4"
+                  :headers="dayHeaders"
+                  :items="addCourseDays"
+                  :items-per-page="-1"
+                >
+                  <!-- eslint-disable-next-line vue/valid-v-slot -->
+                  <template #item.number="{ item }">
+                    {{ formatDayNumber(item.number) }}
+                  </template>
+                  <!-- eslint-disable-next-line vue/valid-v-slot -->
+                  <template #item.start="{ item }">
+                    {{ formatTime(item.start) }}
+                  </template>
+                  <!-- eslint-disable-next-line vue/valid-v-slot -->
+                  <template #item.end="{ item }">
+                    {{ formatTime(item.end) }}
+                  </template>
+                  <!-- eslint-disable-next-line vue/valid-v-slot -->
+                  <template #item.remove="{ item }">
+                    <v-btn
+                      color="error"
+                      icon
+                      @click="addCourseRemoveDay(item)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-col>
+            </v-row>
+            <div class="text-center">
+              <v-btn
+                color="primary"
+                :disabled="!addCourseIsValid || addCourseDays.length === 0"
+                @click="addCourse"
+              >
+                Add Course
+              </v-btn>
+            </div>
+          </v-form>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
     <v-calendar
       color="primary"
       type="week"
@@ -11,10 +143,46 @@
 </template>
 
 <script>
+const requiredRule = v => !!v || 'Required'
+
 export default {
   data: () => ({
     now: '2021-08-01',
     courses: [],
+    addCourseDayNumber: '',
+    addCourseDayStart: '',
+    addCourseDayEnd: '',
+    dayHeaders: [
+      {
+        text: 'Day',
+        value: 'number',
+      },
+      {
+        text: 'Start',
+        value: 'start',
+      },
+      {
+        text: 'End',
+        value: 'end',
+      },
+      {
+        text: '',
+        value: 'remove',
+        width: 36,
+      },
+    ],
+    addCourseIsValid: false,
+    addCourseName: '',
+    addCourseColor: '',
+    addCourseDays: [],
+    courseNameRules: [
+      requiredRule,
+      v => !v || !/[^a-zA-Z0-9 -]/.test(v) || 'Letters, numbers, spaces, and hyphens only',
+    ],
+    courseColorRules: [
+      requiredRule,
+      v => !v || /^#[0-9a-fA-F]{6}$/.test(v) || 'Hexadecimal (#000000) only',
+    ],
   }),
   computed: {
     calendarEvents() {
@@ -38,6 +206,11 @@ export default {
         query[index] = `${course.name}|${course.color}|${days}`
         return query
       }, {})
+    },
+    addCourseDayIsValid() {
+      return this.addCourseDayNumber !== ''
+        && this.addCourseDayStart && this.$refs.addCourseDayStartField?.isValid
+        && this.addCourseDayEnd && this.$refs.addCourseDayEndField?.isValid
     },
   },
   watch: {
@@ -68,6 +241,42 @@ export default {
   methods: {
     courseDayToQuery(day) {
       return `${day.number},${day.start.hours},${day.start.minutes},${day.end.hours},${day.end.minutes}`
+    },
+    formatDayNumber(number) {
+      return this.$refs.addCourseDayField ? this.$refs.addCourseDayField.options[number].text : ''
+    },
+    formatTime(time) {
+      return `${time.hours}:${time.minutes.toString().padStart(2, '0')}`
+    },
+    addCourseDay() {
+      const [startHours, startMinutes] = this.addCourseDayStart.split(':')
+      const [endHours, endMinutes] = this.addCourseDayEnd.split(':')
+      this.addCourseDays.push({
+        number: this.addCourseDayNumber,
+        start: { hours: parseInt(startHours), minutes: parseInt(startMinutes) },
+        end: { hours: parseInt(endHours), minutes: parseInt(endMinutes) },
+      })
+    },
+    addCourseRemoveDay(day) {
+      this.addCourseDays.splice(this.addCourseDays.indexOf(day), 1)
+    },
+    addCourse() {
+      const days = []
+      this.addCourseDays.forEach((day) => {
+        days.push({
+          number: day.number,
+          start: { hours: day.start.hours, minutes: day.start.minutes },
+          end: { hours: day.end.hours, minutes: day.end.minutes },
+        })
+      })
+      this.courses.push({
+        name: this.addCourseName,
+        color: this.addCourseColor,
+        days,
+      })
+      this.addCourseName = ''
+      this.addCourseColor = ''
+      this.$refs.addCourseForm.resetValidation()
     },
   },
 }
