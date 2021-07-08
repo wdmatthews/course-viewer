@@ -6,10 +6,14 @@
         v-model="editCourseIsValid"
         @submit.prevent
       >
-        <v-row>
+        <v-row
+          no-gutters
+          class="ma-n2"
+        >
           <v-col
             cols="12"
             md="6"
+            class="px-2"
           >
             <v-text-field
               v-model="editedCourse.name"
@@ -23,6 +27,7 @@
           <v-col
             cols="12"
             md="6"
+            class="px-2"
           >
             <v-text-field
               v-model="editedCourse.color"
@@ -36,6 +41,7 @@
           <v-col
             cols="12"
             md="4"
+            class="px-2"
           >
             <DayField
               ref="editCourseDayField"
@@ -46,6 +52,7 @@
           <v-col
             cols="12"
             md="4"
+            class="px-2"
           >
             <TimeField
               ref="editCourseDayStartField"
@@ -57,6 +64,7 @@
           <v-col
             cols="12"
             md="4"
+            class="px-2"
           >
             <TimeField
               ref="editCourseDayEndField"
@@ -66,7 +74,7 @@
             />
           </v-col>
         </v-row>
-        <div class="text-center mb-4">
+        <div class="text-center mt-2">
           <v-btn
             color="primary"
             :disabled="!editCourseDayIsValid || !isEditing"
@@ -89,7 +97,6 @@
               hide-default-footer
               mobile-breakpoint="0"
               no-data-text="Add a day above"
-              class="mb-4"
               :headers="dayHeaders"
               :items="editedCourse.days"
               :items-per-page="-1"
@@ -122,24 +129,25 @@
             </v-data-table>
           </v-col>
         </v-row>
-        <div class="text-center">
+        <div class="text-center mt-4 mb-n4">
           <v-btn
+            class="mb-4"
             :color="isEditing ? '' : 'primary'"
-            @click="isEditing ? reset() : (isEditing = true)"
+            @click="isEditing ? reset(course) : (isEditing = true)"
           >
             {{ isEditing ? 'Cancel' : 'Edit' }}
           </v-btn>
           <v-btn
             v-show="isEditing"
             color="primary"
-            class="ml-4"
+            class="ml-4 mb-4"
             :disabled="!editCourseIsValid || editedCourse.days.length === 0"
             @click="save"
           >
             Save
           </v-btn>
           <v-btn
-            class="ml-4"
+            class="ml-4 mb-4"
             :color="isRemoving ? '' : 'error'"
             :outlined="!isRemoving"
             @click="isRemoving = !isRemoving"
@@ -150,7 +158,7 @@
             v-show="isRemoving"
             color="error"
             outlined
-            class="ml-4"
+            class="ml-4 mb-4"
             @click="remove"
           >
             Confirm

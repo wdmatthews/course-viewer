@@ -2,7 +2,6 @@
   <v-select
     label="Day"
     outlined
-    hide-details
     dense
     item-text="text"
     item-value="value"

@@ -9,10 +9,14 @@
             v-model="addCourseIsValid"
             @submit.prevent
           >
-            <v-row>
+            <v-row
+              no-gutters
+              class="ma-n2"
+            >
               <v-col
                 cols="12"
                 md="6"
+                class="px-2"
               >
                 <v-text-field
                   v-model="addCourseName"
@@ -25,6 +29,7 @@
               <v-col
                 cols="12"
                 md="6"
+                class="px-2"
               >
                 <v-text-field
                   v-model="addCourseColor"
@@ -37,6 +42,7 @@
               <v-col
                 cols="12"
                 md="4"
+                class="px-2"
               >
                 <DayField
                   ref="addCourseDayField"
@@ -46,6 +52,7 @@
               <v-col
                 cols="12"
                 md="4"
+                class="px-2"
               >
                 <TimeField
                   ref="addCourseDayStartField"
@@ -56,6 +63,7 @@
               <v-col
                 cols="12"
                 md="4"
+                class="px-2"
               >
                 <TimeField
                   ref="addCourseDayEndField"
@@ -64,7 +72,7 @@
                 />
               </v-col>
             </v-row>
-            <div class="text-center mb-4">
+            <div class="text-center mt-2">
               <v-btn
                 color="primary"
                 :disabled="!addCourseDayIsValid"
@@ -87,7 +95,6 @@
                   hide-default-footer
                   mobile-breakpoint="0"
                   no-data-text="Add a day above"
-                  class="mb-4"
                   :headers="dayHeaders"
                   :items="addCourseDays"
                   :items-per-page="-1"
@@ -119,7 +126,7 @@
                 </v-data-table>
               </v-col>
             </v-row>
-            <div class="text-center">
+            <div class="text-center mt-4">
               <v-btn
                 color="primary"
                 :disabled="!addCourseIsValid || addCourseDays.length === 0"
@@ -142,13 +149,28 @@
         @remove="courses.splice(i, 1)"
       />
     </v-expansion-panels>
-    <v-calendar
-      color="primary"
-      type="week"
-      :now="now"
-      :value="now"
-      :events="calendarEvents"
-    />
+    <v-sheet height="500">
+      <v-calendar
+        color="primary"
+        type="week"
+        now="2021-07-01"
+        value="2021-08-01"
+        first-interval="7"
+        interval-count="15"
+        interval-height="52"
+        :events="calendarEvents"
+      >
+        <template #day-label-header>
+          <span />
+        </template>
+        <template #event="{ event, eventParsed }">
+          <div class="pa-2">
+            {{ event.name }}<br>
+            {{ eventParsed.start.time }} - {{ eventParsed.end.time }}
+          </div>
+        </template>
+      </v-calendar>
+    </v-sheet>
   </div>
 </template>
 
@@ -157,7 +179,6 @@ const requiredRule = v => !!v || 'Required'
 
 export default {
   data: () => ({
-    now: '2021-08-01',
     courses: [],
     addCourseDayNumber: '',
     addCourseDayStart: '',
@@ -166,10 +187,12 @@ export default {
       {
         text: 'Day',
         value: 'number',
+        width: 116,
       },
       {
         text: 'Start',
         value: 'start',
+        width: 64,
       },
       {
         text: 'End',
