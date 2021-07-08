@@ -7,6 +7,7 @@
     item-text="text"
     item-value="value"
     :items="options"
+    :disabled="disabled"
     :value="value"
     @input="$emit('input', $event)"
   />
@@ -18,6 +19,10 @@ export default {
     value: {
       type: [String, Number],
       default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data: vm => ({

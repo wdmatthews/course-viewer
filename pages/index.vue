@@ -2,9 +2,7 @@
   <div class="pa-4">
     <v-expansion-panels class="mb-4">
       <v-expansion-panel>
-        <v-expansion-panel-header>
-          Add Course
-        </v-expansion-panel-header>
+        <v-expansion-panel-header>Add Course</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-form
             ref="addCourseForm"
@@ -111,6 +109,8 @@
                     <v-btn
                       color="error"
                       icon
+                      outlined
+                      class="my-2"
                       @click="addCourseRemoveDay(item)"
                     >
                       <v-icon>mdi-delete</v-icon>
@@ -131,6 +131,16 @@
           </v-form>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <CoursePanel
+        v-for="(course, i) in courses"
+        :key="`course-${i}`"
+        :course="course"
+        :day-headers="dayHeaders"
+        :course-name-rules="courseNameRules"
+        :course-color-rules="courseColorRules"
+        @save="saveCourse(i, $event)"
+        @remove="courses.splice(i, 1)"
+      />
     </v-expansion-panels>
     <v-calendar
       color="primary"
@@ -277,6 +287,9 @@ export default {
       this.addCourseName = ''
       this.addCourseColor = ''
       this.$refs.addCourseForm.resetValidation()
+    },
+    saveCourse(index, course) {
+      this.$set(this.courses, index, course)
     },
   },
 }

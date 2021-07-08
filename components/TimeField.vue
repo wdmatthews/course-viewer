@@ -5,6 +5,7 @@
     dense
     :label="label"
     :rules="rules"
+    :disabled="disabled"
     :value="value"
     @input="$emit('input', $event)"
   />
@@ -20,6 +21,10 @@ export default {
     label: {
       type: String,
       default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data: vm => ({
