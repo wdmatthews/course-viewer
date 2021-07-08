@@ -14,38 +14,7 @@
 export default {
   data: () => ({
     now: '2021-08-01',
-    courses: [
-      {
-        name: 'Example Course 1',
-        days: [
-          {
-            number: 1,
-            start: { hours: 12, minutes: 30 },
-            end: { hours: 15, minutes: 0 },
-          },
-          {
-            number: 3,
-            start: { hours: 12, minutes: 30 },
-            end: { hours: 15, minutes: 0 },
-          },
-        ],
-      },
-      {
-        name: 'Example Course 2',
-        days: [
-          {
-            number: 2,
-            start: { hours: 12, minutes: 30 },
-            end: { hours: 15, minutes: 0 },
-          },
-          {
-            number: 4,
-            start: { hours: 12, minutes: 30 },
-            end: { hours: 15, minutes: 0 },
-          },
-        ],
-      },
-    ],
+    courses: [],
   }),
   computed: {
     calendarEvents() {
@@ -53,6 +22,7 @@ export default {
         course.days.forEach((day) => {
           events.push({
             name: course.name,
+            color: course.color,
             start: `2021-08-0${day.number + 1} ${day.start.hours}:${day.start.minutes}`,
             end: `2021-08-0${day.number + 1} ${day.end.hours}:${day.end.minutes}`,
           })
@@ -65,7 +35,7 @@ export default {
         const days = course.days.reduce((query, day, index) => {
           return query + (index > 0 ? '|' : '') + this.courseDayToQuery(day)
         }, '')
-        query[index] = `${course.name}|${days}`
+        query[index] = `${course.name}|${course.color}|${days}`
         return query
       }, {})
     },
@@ -78,9 +48,10 @@ export default {
   },
   created() {
     this.courses = Object.values(this.$route.query).reduce((courses, courseQuery) => {
-      const [name, ...days] = courseQuery.split('|')
+      const [name, color, ...days] = courseQuery.split('|')
       courses.push({
         name,
+        color,
         days: days.reduce((courseDays, queryDay) => {
           const [number, startHours, startMinutes, endHours, endMinutes] = queryDay.split(',')
           courseDays.push({
