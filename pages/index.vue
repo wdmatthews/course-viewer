@@ -149,7 +149,7 @@
         @remove="courses.splice(i, 1)"
       />
     </v-expansion-panels>
-    <v-sheet height="500">
+    <v-sheet height="750">
       <v-calendar
         color="primary"
         type="week"
@@ -164,7 +164,10 @@
           <span />
         </template>
         <template #event="{ event, eventParsed }">
-          <div class="pa-2">
+          <div
+            class="pa-1"
+            style="white-space: normal;"
+          >
             {{ event.name }}<br>
             {{ eventParsed.start.time }} - {{ eventParsed.end.time }}
           </div>
