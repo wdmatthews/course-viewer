@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel class="blue-grey darken-4">
     <v-expansion-panel-header>{{ course.name }}</v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-form
@@ -70,9 +70,10 @@
             />
           </v-col>
         </v-row>
-        <div class="text-center mt-2">
+        <div class="text-center mt-2 mb-4">
           <v-btn
             color="primary"
+            outlined
             :disabled="!editCourseDayIsValid || !isEditing"
             @click="addCourseDay"
           >
@@ -93,6 +94,7 @@
               hide-default-footer
               mobile-breakpoint="0"
               no-data-text="Add a day above"
+              class="blue-grey darken-3"
               :headers="dayHeaders"
               :items="editedCourse.days"
               :items-per-page="-1"
@@ -127,6 +129,7 @@
         </v-row>
         <div class="text-center mt-4 mb-n4">
           <v-btn
+            outlined
             class="mb-4"
             :color="isEditing ? '' : 'primary'"
             @click="isEditing ? reset(course) : (isEditing = true)"
@@ -136,6 +139,7 @@
           <v-btn
             v-show="isEditing"
             color="primary"
+            outlined
             class="ml-4 mb-4"
             :disabled="!editCourseIsValid || editedCourse.days.length === 0"
             @click="save"
@@ -143,9 +147,9 @@
             Save
           </v-btn>
           <v-btn
+            outlined
             class="ml-4 mb-4"
             :color="isRemoving ? '' : 'error'"
-            :outlined="!isRemoving"
             @click="isRemoving = !isRemoving"
           >
             {{ isRemoving ? 'Cancel' : 'Remove' }}

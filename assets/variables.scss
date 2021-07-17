@@ -1,12 +1,17 @@
-@import url('https://fonts.googleapis.com/css?family=Gugi&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Dosis:300,400,700&display=swap');
 
-$body-font-family: 'Gugi', sans-serif;
-$heading-font-family: 'Gugi', sans-serif;
+$material-dark: (
+  'background': #212121,
+);
 
-$border-radius-root: 0px;
+$body-font-family: 'Dosis', sans-serif;
+$heading-font-family: 'Dosis', sans-serif;
+
+$border-radius-root: 1rem;
 
 $expansion-panel-header-padding: 16px;
-$expansion-panel-content-padding: 4px 16px 16px;
+$expansion-panel-content-padding: 16px;
 $expansion-panel-active-header-min-height: 48px;
 
 $calendar-event-right-empty: 0px;
+$calendar-event-border-radius: 0px;

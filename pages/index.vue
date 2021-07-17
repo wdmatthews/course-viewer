@@ -1,7 +1,7 @@
 <template>
   <div class="pa-4">
     <v-expansion-panels class="mb-4">
-      <v-expansion-panel>
+      <v-expansion-panel class="blue-grey darken-4">
         <v-expansion-panel-header>Settings</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-form
@@ -49,16 +49,16 @@
               >
                 <v-text-field
                   v-model.number="editedIntervalLength"
-                  label="Interval Length"
+                  label="Interval"
                   outlined
-                  hint="Minutes"
-                  persistent-hint
+                  suffix="minutes"
                   :disabled="!isEditingSettings"
                 />
               </v-col>
             </v-row>
             <div class="text-center mt-4 mb-n4">
               <v-btn
+                outlined
                 class="mb-4"
                 :color="isEditingSettings ? '' : 'primary'"
                 @click="isEditingSettings ? resetSettings() : (isEditingSettings = true)"
@@ -68,6 +68,7 @@
               <v-btn
                 v-show="isEditingSettings"
                 color="primary"
+                outlined
                 class="ml-4 mb-4"
                 :disabled="!editSettingsIsValid"
                 @click="saveSettings"
@@ -78,7 +79,7 @@
           </v-form>
         </v-expansion-panel-content>
       </v-expansion-panel>
-      <v-expansion-panel>
+      <v-expansion-panel class="blue-grey darken-4">
         <v-expansion-panel-header>Add Course</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-form
@@ -143,9 +144,10 @@
                 />
               </v-col>
             </v-row>
-            <div class="text-center mt-2">
+            <div class="text-center mt-2 mb-4">
               <v-btn
                 color="primary"
+                outlined
                 :disabled="!addCourseDayIsValid"
                 @click="addCourseDay"
               >
@@ -166,6 +168,7 @@
                   hide-default-footer
                   mobile-breakpoint="0"
                   no-data-text="Add a day above"
+                  class="blue-grey darken-3"
                   :headers="dayHeaders"
                   :items="addCourseDays"
                   :items-per-page="-1"
@@ -200,6 +203,7 @@
             <div class="text-center mt-4">
               <v-btn
                 color="primary"
+                outlined
                 :disabled="!addCourseIsValid || addCourseDays.length === 0"
                 @click="addCourse"
               >
