@@ -145,13 +145,14 @@
     </v-expansion-panels>
     <v-sheet height="750">
       <v-calendar
+        ref="calendar"
         color="primary"
         first-interval="7"
         interval-count="15"
         interval-height="52"
         :events="calendarEvents"
         :type="isMobile ? 'day' : 'week'"
-        :now="`2021-07-0${isMobile ? currentDay + 1 : 1}`"
+        :now="`2021-07-0${isMobile ? currentDay + 1 : 1} ${today.getHours()}:${today.getMinutes()}`"
         :value="`2021-08-0${currentDay + 1}`"
       >
         <template #day-label-header>
@@ -168,6 +169,13 @@
             {{ formatTime({ hours: eventParsed.end.hour, minutes: eventParsed.end.minute }) }}
           </div>
         </template>
+        <template #day-body="{ date, week }">
+          <div
+            v-show="!week[currentDay] || date === week[currentDay].date"
+            class="v-current-time"
+            :style="{ top: nowY }"
+          />
+        </template>
       </v-calendar>
     </v-sheet>
   </div>
@@ -175,6 +183,7 @@
 
 <script>
 const requiredRule = v => !!v || 'Required'
+const today = new Date()
 
 export default {
   data: () => ({
@@ -213,7 +222,9 @@ export default {
       requiredRule,
       v => !v || /^#[0-9a-fA-F]{6}$/.test(v) || 'Hexadecimal (#000000) only',
     ],
-    currentDay: new Date().getDay(),
+    today,
+    currentDay: today.getDay(),
+    ready: false,
   }),
   computed: {
     calendarEvents() {
@@ -246,6 +257,12 @@ export default {
     isMobile() {
       return this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm
     },
+    cal() {
+      return this.ready ? this.$refs.calendar : null
+    },
+    nowY() {
+      return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
+    },
   },
   watch: {
     routeQuery() {
@@ -271,6 +288,11 @@ export default {
       })
       return courses
     }, [])
+  },
+  mounted() {
+    this.ready = true
+    this.scrollToTime()
+    this.updateTime()
   },
   methods: {
     courseDayToQuery(day) {
@@ -320,6 +342,29 @@ export default {
     saveCourse(index, course) {
       this.$set(this.courses, index, course)
     },
+    getCurrentTime() {
+      return this.cal ? this.cal.times.now.hour * 60 + this.cal.times.now.minute : 0
+    },
+    scrollToTime() {
+      const time = this.getCurrentTime()
+      const first = Math.max(0, time - (time % 30) - 30)
+
+      this.cal.scrollToTime(first)
+    },
+    updateTime() {
+      setInterval(() => this.cal.updateTimes(), 60 * 1000)
+    },
   },
 }
 </script>
+
+<style lang="scss">
+.v-current-time {
+  height: 2px;
+  background-color: #F44336;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  pointer-events: none;
+}
+</style>
