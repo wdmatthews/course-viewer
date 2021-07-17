@@ -2,6 +2,46 @@
   <div class="pa-4">
     <v-expansion-panels class="mb-4">
       <v-expansion-panel>
+        <v-expansion-panel-header>Settings</v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-form
+            v-model="editSettingsIsValid"
+            @submit.prevent
+          >
+            <!-- <v-row
+              no-gutters
+              class="ma-n2"
+            >
+              <v-col
+                cols="12"
+                md="6"
+                class="px-2"
+              >
+                
+              </v-col>
+            </v-row> -->
+            <div class="text-center mt-4 mb-n4">
+              <v-btn
+                class="mb-4"
+                :color="isEditingSettings ? '' : 'primary'"
+                @click="isEditingSettings ? resetSettings() : (isEditingSettings = true)"
+              >
+                {{ isEditingSettings ? 'Cancel' : 'Edit' }}
+              </v-btn>
+              <v-btn
+                v-show="isEditingSettings"
+                color="primary"
+                class="ml-4 mb-4"
+                :disabled="!editSettingsIsValid"
+                @click="saveSettings"
+              >
+                Save
+              </v-btn>
+            </div>
+          </v-form>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <v-expansion-panel>
         <v-expansion-panel-header>Add Course</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-form
@@ -143,41 +183,39 @@
         @remove="courses.splice(i, 1)"
       />
     </v-expansion-panels>
-    <v-sheet height="750">
-      <v-calendar
-        ref="calendar"
-        color="primary"
-        first-interval="7"
-        interval-count="15"
-        interval-height="52"
-        :events="calendarEvents"
-        :type="isMobile ? 'day' : 'week'"
-        :now="`2021-07-0${isMobile ? currentDay + 1 : 1} ${today.getHours()}:${today.getMinutes()}`"
-        :value="`2021-08-0${currentDay + 1}`"
-      >
-        <template #day-label-header>
-          <span />
-        </template>
-        <template #event="{ event, eventParsed }">
-          <div
-            class="pa-1"
-            style="white-space: normal;"
-          >
-            {{ event.name }}<br>
-            {{ formatTime({ hours: eventParsed.start.hour, minutes: eventParsed.start.minute }) }}
-            -
-            {{ formatTime({ hours: eventParsed.end.hour, minutes: eventParsed.end.minute }) }}
-          </div>
-        </template>
-        <template #day-body="{ date, week }">
-          <div
-            v-show="!week[currentDay] || date === week[currentDay].date"
-            class="v-current-time"
-            :style="{ top: nowY }"
-          />
-        </template>
-      </v-calendar>
-    </v-sheet>
+    <v-calendar
+      ref="calendar"
+      color="primary"
+      :first-interval="dayStart * 60.0 / intervalLength"
+      :interval-count="(dayEnd - dayStart) * 60.0 / intervalLength"
+      :interval-minutes="intervalLength"
+      :events="calendarEvents"
+      :type="isMobile ? 'day' : 'week'"
+      :now="`2021-07-0${isMobile ? currentDay + 1 : 1} ${today.getHours()}:${today.getMinutes()}`"
+      :value="`2021-08-0${currentDay + 1}`"
+    >
+      <template #day-label-header>
+        <span />
+      </template>
+      <template #event="{ event, eventParsed }">
+        <div
+          class="pa-1"
+          style="white-space: normal;"
+        >
+          {{ event.name }}<br>
+          {{ formatTime({ hours: eventParsed.start.hour, minutes: eventParsed.start.minute }) }}
+          -
+          {{ formatTime({ hours: eventParsed.end.hour, minutes: eventParsed.end.minute }) }}
+        </div>
+      </template>
+      <template #day-body="{ date, week }">
+        <div
+          v-show="!week[currentDay] || date === week[currentDay].date"
+          class="v-current-time"
+          :style="{ top: nowY }"
+        />
+      </template>
+    </v-calendar>
   </div>
 </template>
 
@@ -225,6 +263,11 @@ export default {
     today,
     currentDay: today.getDay(),
     ready: false,
+    dayStart: 7,
+    dayEnd: 22,
+    intervalLength: 60,
+    editSettingsIsValid: false,
+    isEditingSettings: false,
   }),
   computed: {
     calendarEvents() {
@@ -347,6 +390,12 @@ export default {
         this.cal.times.now.hour = now.getHours()
         this.cal.times.now.minute = now.getMinutes()
       }, 60 * 1000)
+    },
+    saveSettings() {
+      this.isEditingSettings = false
+    },
+    resetSettings() {
+      this.isEditingSettings = false
     },
   },
 }
