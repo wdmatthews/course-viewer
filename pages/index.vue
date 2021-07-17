@@ -146,13 +146,13 @@
     <v-sheet height="750">
       <v-calendar
         color="primary"
-        type="week"
-        now="2021-07-01"
-        value="2021-08-01"
         first-interval="7"
         interval-count="15"
         interval-height="52"
         :events="calendarEvents"
+        :type="isMobile ? 'day' : 'week'"
+        :now="`2021-07-0${isMobile ? currentDay + 1 : 1}`"
+        :value="`2021-08-0${currentDay + 1}`"
       >
         <template #day-label-header>
           <span />
@@ -213,6 +213,7 @@ export default {
       requiredRule,
       v => !v || /^#[0-9a-fA-F]{6}$/.test(v) || 'Hexadecimal (#000000) only',
     ],
+    currentDay: new Date().getDay(),
   }),
   computed: {
     calendarEvents() {
@@ -241,6 +242,9 @@ export default {
       return this.addCourseDayNumber !== ''
         && this.addCourseDayStart && this.$refs.addCourseDayStartField?.isValid
         && this.addCourseDayEnd && this.$refs.addCourseDayEndField?.isValid
+    },
+    isMobile() {
+      return this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm
     },
   },
   watch: {
