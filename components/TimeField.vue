@@ -3,7 +3,9 @@
     ref="field"
     outlined
     dense
+    placeholder="24 hour format"
     :label="label"
+    :suffix="amPmTime"
     :rules="rules"
     :disabled="disabled"
     :value="value"
@@ -35,6 +37,18 @@ export default {
   computed: {
     isValid() {
       return this.$refs.field.valid
+    },
+    amPmTime() {
+      const [hours, minutes] = this.value.split(':')
+      if (hours && minutes && !isNaN(hours) && !isNaN(minutes)) {
+        let hoursInt = parseInt(hours)
+        const minutesInt = parseInt(minutes)
+        const isAM = hoursInt < 12
+        if (hoursInt === 0) { hoursInt = 12 }
+        if (hoursInt > 12) { hoursInt -= 12 }
+        return `${hoursInt.toString().padStart(2, '0')}:${minutesInt.toString().padStart(2, '0')} ${isAM ? 'AM' : 'PM'}`
+      }
+      return ''
     },
   },
 }

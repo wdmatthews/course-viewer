@@ -163,7 +163,9 @@
             style="white-space: normal;"
           >
             {{ event.name }}<br>
-            {{ eventParsed.start.time }} - {{ eventParsed.end.time }}
+            {{ formatTime({ hours: eventParsed.start.hour, minutes: eventParsed.start.minute }) }}
+            -
+            {{ formatTime({ hours: eventParsed.end.hour, minutes: eventParsed.end.minute }) }}
           </div>
         </template>
       </v-calendar>
@@ -184,12 +186,10 @@ export default {
       {
         text: 'Day',
         value: 'number',
-        width: 116,
       },
       {
         text: 'Start',
         value: 'start',
-        width: 64,
       },
       {
         text: 'End',
@@ -276,7 +276,12 @@ export default {
       return this.$refs.addCourseDayField ? this.$refs.addCourseDayField.options[number].text : ''
     },
     formatTime(time) {
-      return `${time.hours}:${time.minutes.toString().padStart(2, '0')}`
+      let hoursInt = time.hours
+      const minutesInt = time.minutes
+      const isAM = hoursInt < 12
+      if (hoursInt === 0) { hoursInt = 12 }
+      if (hoursInt > 12) { hoursInt -= 12 }
+      return `${hoursInt.toString().padStart(2, '0')}:${minutesInt.toString().padStart(2, '0')} ${isAM ? 'AM' : 'PM'}`
     },
     addCourseDay() {
       const [startHours, startMinutes] = this.addCourseDayStart.split(':')

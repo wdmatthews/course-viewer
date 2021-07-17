@@ -209,7 +209,12 @@ export default {
       return this.$refs.editCourseDayField ? this.$refs.editCourseDayField.options[number].text : ''
     },
     formatTime(time) {
-      return `${time.hours}:${time.minutes.toString().padStart(2, '0')}`
+      let hoursInt = time.hours
+      const minutesInt = time.minutes
+      const isAM = hoursInt < 12
+      if (hoursInt === 0) { hoursInt = 12 }
+      if (hoursInt > 12) { hoursInt -= 12 }
+      return `${hoursInt.toString().padStart(2, '0')}:${minutesInt.toString().padStart(2, '0')} ${isAM ? 'AM' : 'PM'}`
     },
     addCourseDay() {
       const [startHours, startMinutes] = this.editCourseDayStart.split(':')
