@@ -257,6 +257,15 @@
         />
       </template>
     </v-calendar>
+    <v-snackbar
+      v-model="classAlertVisible"
+      text
+      top
+      :timeout="(classAlertColor !== 'warning' ? 120 : 30) * 1000"
+      :color="classAlertColor"
+    >
+      {{ classAlertMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -410,6 +419,12 @@ export default {
         value: 23,
       },
     ],
+    classAlertVisible: false,
+    classAlertColor: '',
+    classAlertMessage: '',
+    classTimeAlertAudio: null,
+    classDismissedAlertAudio: null,
+    classStartedAlertAudio: null,
   }),
   computed: {
     calendarEvents() {
@@ -484,6 +499,9 @@ export default {
   mounted() {
     this.ready = true
     this.updateTime()
+    this.classTimeAlertAudio = new Audio('5minutes.wav')
+    this.classDismissedAlertAudio = new Audio('dismissed.wav')
+    this.classStartedAlertAudio = new Audio('started.wav')
   },
   methods: {
     courseDayToQuery(day) {
@@ -536,8 +554,38 @@ export default {
     updateTime() {
       setInterval(() => {
         const now = new Date()
-        this.cal.times.now.hour = now.getHours()
-        this.cal.times.now.minute = now.getMinutes()
+        const hours = now.getHours()
+        const minutes = now.getMinutes()
+        this.cal.times.now.hour = hours
+        this.cal.times.now.minute = minutes
+        
+        for (const course of this.courses) {
+          for (const day of course.days) {
+            if (day.number !== this.currentDay) { continue }
+            if ((day.end.hours === hours && day.end.minutes - minutes === 5)
+              || (day.end.hours + 1 === hours && day.end.minutes + (60 - minutes) === 5)) {
+              this.classAlertVisible = true
+              this.classAlertColor = 'warning'
+              this.classAlertMessage = `5 minutes remaining for ${course.name}`
+              this.classTimeAlertAudio.play()
+              return
+            }
+            if (day.end.hours === hours && day.end.minutes === minutes) {
+              this.classAlertVisible = true
+              this.classAlertColor = 'error'
+              this.classAlertMessage = `${course.name} is over!`
+              this.classDismissedAlertAudio.play()
+              return
+            }
+            if (day.start.hours === hours && day.start.minutes === minutes) {
+              this.classAlertVisible = true
+              this.classAlertColor = 'success'
+              this.classAlertMessage = `${course.name} started!`
+              this.classStartedAlertAudio.play()
+              return
+            }
+          }
+        }
       }, 60 * 1000)
     },
     saveSettings() {
