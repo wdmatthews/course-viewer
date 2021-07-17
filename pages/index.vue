@@ -8,18 +8,55 @@
             v-model="editSettingsIsValid"
             @submit.prevent
           >
-            <!-- <v-row
+            <v-row
               no-gutters
               class="ma-n2"
             >
               <v-col
                 cols="12"
-                md="6"
+                md="4"
                 class="px-2"
               >
-                
+                <v-select
+                  v-model="editedDayStart"
+                  label="Day Start"
+                  outlined
+                  item-text="text"
+                  item-value="value"
+                  :items="timeChoices"
+                  :disabled="!isEditingSettings"
+                />
               </v-col>
-            </v-row> -->
+              <v-col
+                cols="12"
+                md="4"
+                class="px-2"
+              >
+                <v-select
+                  v-model="editedDayEnd"
+                  label="Day End"
+                  outlined
+                  item-text="text"
+                  item-value="value"
+                  :items="timeChoices"
+                  :disabled="!isEditingSettings"
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                class="px-2"
+              >
+                <v-text-field
+                  v-model.number="editedIntervalLength"
+                  label="Interval Length"
+                  outlined
+                  hint="Minutes"
+                  persistent-hint
+                  :disabled="!isEditingSettings"
+                />
+              </v-col>
+            </v-row>
             <div class="text-center mt-4 mb-n4">
               <v-btn
                 class="mb-4"
@@ -266,8 +303,109 @@ export default {
     dayStart: 7,
     dayEnd: 22,
     intervalLength: 60,
+    editedDayStart: 7,
+    editedDayEnd: 22,
+    editedIntervalLength: 60,
     editSettingsIsValid: false,
     isEditingSettings: false,
+    timeChoices: [
+      {
+        text: '12:00 AM',
+        value: 0,
+      },
+      {
+        text: '1:00 AM',
+        value: 1,
+      },
+      {
+        text: '2:00 AM',
+        value: 2,
+      },
+      {
+        text: '3:00 AM',
+        value: 3,
+      },
+      {
+        text: '4:00 AM',
+        value: 4,
+      },
+      {
+        text: '5:00 AM',
+        value: 5,
+      },
+      {
+        text: '6:00 AM',
+        value: 6,
+      },
+      {
+        text: '7:00 AM',
+        value: 7,
+      },
+      {
+        text: '8:00 AM',
+        value: 8,
+      },
+      {
+        text: '9:00 AM',
+        value: 9,
+      },
+      {
+        text: '10:00 AM',
+        value: 10,
+      },
+      {
+        text: '11:00 AM',
+        value: 11,
+      },
+      {
+        text: '12:00 PM',
+        value: 12,
+      },
+      {
+        text: '1:00 PM',
+        value: 13,
+      },
+      {
+        text: '2:00 PM',
+        value: 14,
+      },
+      {
+        text: '3:00 PM',
+        value: 15,
+      },
+      {
+        text: '4:00 PM',
+        value: 16,
+      },
+      {
+        text: '5:00 PM',
+        value: 17,
+      },
+      {
+        text: '6:00 PM',
+        value: 18,
+      },
+      {
+        text: '7:00 PM',
+        value: 19,
+      },
+      {
+        text: '8:00 PM',
+        value: 20,
+      },
+      {
+        text: '9:00 PM',
+        value: 21,
+      },
+      {
+        text: '10:00 PM',
+        value: 22,
+      },
+      {
+        text: '11:00 PM',
+        value: 23,
+      },
+    ],
   }),
   computed: {
     calendarEvents() {
@@ -290,7 +428,7 @@ export default {
         }, '')
         query[index] = `${course.name}|${course.color}|${days}`
         return query
-      }, {})
+      }, { dayStart: this.dayStart, dayEnd: this.dayEnd, intervalLength: this.intervalLength })
     },
     addCourseDayIsValid() {
       return this.addCourseDayNumber !== ''
@@ -314,7 +452,14 @@ export default {
     },
   },
   created() {
-    this.courses = Object.values(this.$route.query).reduce((courses, courseQuery) => {
+    const { dayStart, dayEnd, intervalLength, ...urlCourses } = this.$route.query
+    const courseObjs = Object.values(urlCourses)
+    if (!dayStart) { return }
+    this.dayStart = parseInt(dayStart)
+    this.dayEnd = parseInt(dayEnd)
+    this.intervalLength = parseInt(intervalLength)
+    this.resetSettings()
+    this.courses = courseObjs.reduce((courses, courseQuery) => {
       const [name, color, ...days] = courseQuery.split('|')
       courses.push({
         name,
@@ -393,9 +538,15 @@ export default {
     },
     saveSettings() {
       this.isEditingSettings = false
+      this.dayStart = this.editedDayStart
+      this.dayEnd = this.editedDayEnd
+      this.intervalLength = this.editedIntervalLength
     },
     resetSettings() {
       this.isEditingSettings = false
+      this.editedDayStart = this.dayStart
+      this.editedDayEnd = this.dayEnd
+      this.editedIntervalLength = this.intervalLength
     },
   },
 }
