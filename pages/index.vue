@@ -31,13 +31,7 @@
                 md="6"
                 class="px-2"
               >
-                <v-text-field
-                  v-model="addCourseColor"
-                  label="Color"
-                  outlined
-                  dense
-                  :rules="courseColorRules"
-                />
+                <ColorField v-model="addCourseColor" />
               </v-col>
               <v-col
                 cols="12"
@@ -209,7 +203,7 @@ export default {
     ],
     addCourseIsValid: false,
     addCourseName: '',
-    addCourseColor: '',
+    addCourseColor: '#F44336',
     addCourseDays: [],
     courseNameRules: [
       requiredRule,
@@ -311,7 +305,7 @@ export default {
         days,
       })
       this.addCourseName = ''
-      this.addCourseColor = ''
+      this.addCourseColor = '#F44336'
       this.$refs.addCourseForm.resetValidation()
     },
     saveCourse(index, course) {

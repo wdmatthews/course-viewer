@@ -29,13 +29,9 @@
             md="6"
             class="px-2"
           >
-            <v-text-field
+            <ColorField
               v-model="editedCourse.color"
-              label="Color"
-              outlined
-              dense
               :disabled="!isEditing"
-              :rules="courseColorRules"
             />
           </v-col>
           <v-col
