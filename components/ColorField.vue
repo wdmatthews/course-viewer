@@ -28,11 +28,11 @@ export default {
     colors: [
       {
         text: 'Red',
-        value: '#F44336',
+        value: '#D32F2F',
       },
       {
         text: 'Pink',
-        value: '#E91E63',
+        value: '#D81B60',
       },
       {
         text: 'Purple',
@@ -48,47 +48,47 @@ export default {
       },
       {
         text: 'Blue',
-        value: '#2196F3',
+        value: '#1976D2',
       },
       {
         text: 'Light Blue',
-        value: '#03A9F4',
+        value: '#0277BD',
       },
       {
         text: 'Cyan',
-        value: '#00BCD4',
+        value: '#00838F',
       },
       {
         text: 'Teal',
-        value: '#009688',
+        value: '#00796B',
       },
       {
         text: 'Green',
-        value: '#4CAF50',
+        value: '#2E7D32',
       },
       {
         text: 'Light Green',
-        value: '#8BC34A',
+        value: '#689F38',
       },
       {
         text: 'Lime',
-        value: '#C0CA33',
+        value: '#9E9D24',
       },
       {
         text: 'Yellow',
-        value: '#FBC02D',
+        value: '#F9A825',
       },
       {
         text: 'Amber',
-        value: '#FFB300',
+        value: '#FF8F00',
       },
       {
         text: 'Orange',
-        value: '#FF9800',
+        value: '#EF6C00',
       },
       {
         text: 'Deep Orange',
-        value: '#FF5722',
+        value: '#F4511E',
       },
       {
         text: 'Brown',

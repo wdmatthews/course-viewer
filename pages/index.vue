@@ -559,7 +559,7 @@ export default {
 <style lang="scss">
 .v-current-time {
   height: 2px;
-  background-color: #F44336;
+  background-color: #81D4FA;
   position: absolute;
   left: 0px;
   right: 0px;
