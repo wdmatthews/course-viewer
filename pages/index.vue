@@ -291,7 +291,6 @@ export default {
   },
   mounted() {
     this.ready = true
-    this.scrollToTime()
     this.updateTime()
   },
   methods: {
@@ -342,17 +341,12 @@ export default {
     saveCourse(index, course) {
       this.$set(this.courses, index, course)
     },
-    getCurrentTime() {
-      return this.cal ? this.cal.times.now.hour * 60 + this.cal.times.now.minute : 0
-    },
-    scrollToTime() {
-      const time = this.getCurrentTime()
-      const first = Math.max(0, time - (time % 30) - 30)
-
-      this.cal.scrollToTime(first)
-    },
     updateTime() {
-      setInterval(() => this.cal.updateTimes(), 60 * 1000)
+      setInterval(() => {
+        const now = new Date()
+        this.cal.times.now.hour = now.getHours()
+        this.cal.times.now.minute = now.getMinutes()
+      }, 60 * 1000)
     },
   },
 }
