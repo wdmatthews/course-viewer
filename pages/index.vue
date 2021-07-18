@@ -546,6 +546,7 @@ export default {
       })
       this.addCourseName = ''
       this.addCourseColor = '#F44336'
+      this.addCourseDays = []
       this.$refs.addCourseForm.resetValidation()
     },
     saveCourse(index, course) {
