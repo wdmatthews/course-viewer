@@ -55,6 +55,18 @@
                   :disabled="!isEditingSettings"
                 />
               </v-col>
+              <v-col
+                cols="12"
+                class="px-2"
+              >
+                <v-checkbox
+                  v-model="editedShowNumbers"
+                  label="Show Period Numbers"
+                  outlined
+                  class="mt-0"
+                  :disabled="!isEditingSettings"
+                />
+              </v-col>
             </v-row>
             <div class="text-center mt-4 mb-n4">
               <v-btn
@@ -230,6 +242,7 @@
       :first-interval="dayStart * 60.0 / intervalLength"
       :interval-count="(dayEnd - dayStart) * 60.0 / intervalLength"
       :interval-minutes="intervalLength"
+      :interval-format="actuallyShowNumbers ? formatInterval : null"
       :events="calendarEvents"
       :type="isMobile ? 'day' : 'week'"
       :now="`2021-07-0${isMobile ? currentDay + 1 : 1} ${today.getHours()}:${today.getMinutes()}`"
@@ -316,9 +329,12 @@ export default {
     dayStart: 7,
     dayEnd: 22,
     intervalLength: 60,
+    showNumbers: false,
+    actuallyShowNumbers: false,
     editedDayStart: 7,
     editedDayEnd: 22,
     editedIntervalLength: 60,
+    editedShowNumbers: false,
     editSettingsIsValid: false,
     isEditingSettings: false,
     timeChoices: [
@@ -425,6 +441,7 @@ export default {
     classTimeAlertAudio: null,
     classDismissedAlertAudio: null,
     classStartedAlertAudio: null,
+    intervals: [],
   }),
   computed: {
     calendarEvents() {
@@ -447,7 +464,12 @@ export default {
         }, '')
         query[index] = `${course.name}|${course.color}|${days}`
         return query
-      }, { dayStart: this.dayStart, dayEnd: this.dayEnd, intervalLength: this.intervalLength })
+      }, {
+        dayStart: this.dayStart,
+        dayEnd: this.dayEnd,
+        intervalLength: this.intervalLength,
+        showNumbers: this.showNumbers,
+      })
     },
     addCourseDayIsValid() {
       return this.addCourseDayNumber !== ''
@@ -471,12 +493,13 @@ export default {
     },
   },
   created() {
-    const { dayStart, dayEnd, intervalLength, ...urlCourses } = this.$route.query
+    const { dayStart, dayEnd, intervalLength, showNumbers, ...urlCourses } = this.$route.query
     const courseObjs = Object.values(urlCourses)
     if (!dayStart) { return }
     this.dayStart = parseInt(dayStart)
     this.dayEnd = parseInt(dayEnd)
     this.intervalLength = parseInt(intervalLength)
+    this.showNumbers = showNumbers === 'true'
     this.resetSettings()
     this.courses = courseObjs.reduce((courses, courseQuery) => {
       const [name, color, ...days] = courseQuery.split('|')
@@ -502,6 +525,15 @@ export default {
     this.classTimeAlertAudio = new Audio('5minutes.wav')
     this.classDismissedAlertAudio = new Audio('dismissed.wav')
     this.classStartedAlertAudio = new Audio('started.wav')
+    
+    document.querySelectorAll('.v-calendar-daily__interval-text').forEach((interval) => {
+      if (interval.innerText.length === 0) { return }
+      this.intervals.push(interval.innerText)
+    })
+    
+    setTimeout(() => {
+      this.actuallyShowNumbers = this.showNumbers
+    }, 100)
   },
   methods: {
     courseDayToQuery(day) {
@@ -517,6 +549,12 @@ export default {
       if (hoursInt === 0) { hoursInt = 12 }
       if (hoursInt > 12) { hoursInt -= 12 }
       return `${hoursInt.toString().padStart(2, '0')}:${minutesInt.toString().padStart(2, '0')} ${isAM ? 'AM' : 'PM'}`
+    },
+    formatInterval(interval) {
+      let hour = interval.hour
+      if (hour === 0) { hour = 12 } else if (hour > 12) { hour -= 12 }
+      const formattedInterval = `${hour}${interval.minute > 0 ? ':' + interval.minute.toString().padStart(2, '0') : ''} ${interval.hour < 12 ? 'AM' : 'PM'}`
+      return this.intervals.indexOf(formattedInterval)
     },
     addCourseDay() {
       const [startHours, startMinutes] = this.addCourseDayStart.split(':')
@@ -594,12 +632,15 @@ export default {
       this.dayStart = this.editedDayStart
       this.dayEnd = this.editedDayEnd
       this.intervalLength = this.editedIntervalLength
+      this.showNumbers = this.editedShowNumbers
+      this.actuallyShowNumbers = this.showNumbers
     },
     resetSettings() {
       this.isEditingSettings = false
       this.editedDayStart = this.dayStart
       this.editedDayEnd = this.dayEnd
       this.editedIntervalLength = this.intervalLength
+      this.editedShowNumbers = this.showNumbers
     },
   },
 }
