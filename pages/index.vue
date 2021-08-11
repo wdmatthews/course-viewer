@@ -455,7 +455,7 @@ export default {
       let hour = interval.hour
       if (hour === 0) { hour = 12 } else if (hour > 12) { hour -= 12 }
       const formattedInterval = `${hour}${interval.minute > 0 ? ':' + interval.minute.toString().padStart(2, '0') : ''} ${interval.hour < 12 ? 'AM' : 'PM'}`
-      return this.intervals.indexOf(formattedInterval)
+      return this.intervals.indexOf(formattedInterval) + 1
     },
     addCourseDay() {
       const [startHours, startMinutes] = this.addCourseDayStart.split(':')
