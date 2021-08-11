@@ -17,13 +17,9 @@
                 md="4"
                 class="px-2"
               >
-                <v-select
+                <TimeField
                   v-model="editedDayStart"
                   label="Day Start"
-                  outlined
-                  item-text="text"
-                  item-value="value"
-                  :items="timeChoices"
                   :disabled="!isEditingSettings"
                 />
               </v-col>
@@ -32,13 +28,9 @@
                 md="4"
                 class="px-2"
               >
-                <v-select
+                <TimeField
                   v-model="editedDayEnd"
                   label="Day End"
-                  outlined
-                  item-text="text"
-                  item-value="value"
-                  :items="timeChoices"
                   :disabled="!isEditingSettings"
                 />
               </v-col>
@@ -239,8 +231,8 @@
     <v-calendar
       ref="calendar"
       color="primary"
-      :first-interval="dayStart * 60.0 / intervalLength"
-      :interval-count="(dayEnd - dayStart) * 60.0 / intervalLength"
+      :first-time="dayStart"
+      :interval-count="intervalCount"
       :interval-minutes="intervalLength"
       :interval-format="actuallyShowNumbers ? formatInterval : null"
       :events="calendarEvents"
@@ -326,115 +318,17 @@ export default {
     today,
     currentDay: today.getDay(),
     ready: false,
-    dayStart: 7,
-    dayEnd: 22,
+    dayStart: '7:00',
+    dayEnd: '10:00',
     intervalLength: 60,
     showNumbers: false,
     actuallyShowNumbers: false,
-    editedDayStart: 7,
-    editedDayEnd: 22,
+    editedDayStart: '7:00',
+    editedDayEnd: '22:00',
     editedIntervalLength: 60,
     editedShowNumbers: false,
     editSettingsIsValid: false,
     isEditingSettings: false,
-    timeChoices: [
-      {
-        text: '12:00 AM',
-        value: 0,
-      },
-      {
-        text: '1:00 AM',
-        value: 1,
-      },
-      {
-        text: '2:00 AM',
-        value: 2,
-      },
-      {
-        text: '3:00 AM',
-        value: 3,
-      },
-      {
-        text: '4:00 AM',
-        value: 4,
-      },
-      {
-        text: '5:00 AM',
-        value: 5,
-      },
-      {
-        text: '6:00 AM',
-        value: 6,
-      },
-      {
-        text: '7:00 AM',
-        value: 7,
-      },
-      {
-        text: '8:00 AM',
-        value: 8,
-      },
-      {
-        text: '9:00 AM',
-        value: 9,
-      },
-      {
-        text: '10:00 AM',
-        value: 10,
-      },
-      {
-        text: '11:00 AM',
-        value: 11,
-      },
-      {
-        text: '12:00 PM',
-        value: 12,
-      },
-      {
-        text: '1:00 PM',
-        value: 13,
-      },
-      {
-        text: '2:00 PM',
-        value: 14,
-      },
-      {
-        text: '3:00 PM',
-        value: 15,
-      },
-      {
-        text: '4:00 PM',
-        value: 16,
-      },
-      {
-        text: '5:00 PM',
-        value: 17,
-      },
-      {
-        text: '6:00 PM',
-        value: 18,
-      },
-      {
-        text: '7:00 PM',
-        value: 19,
-      },
-      {
-        text: '8:00 PM',
-        value: 20,
-      },
-      {
-        text: '9:00 PM',
-        value: 21,
-      },
-      {
-        text: '10:00 PM',
-        value: 22,
-      },
-      {
-        text: '11:00 PM',
-        value: 23,
-      },
-    ],
     classAlertVisible: false,
     classAlertColor: '',
     classAlertMessage: '',
@@ -485,6 +379,13 @@ export default {
     nowY() {
       return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
     },
+    intervalCount() {
+      const milliseconds = new Date(`8/1/2021 ${this.dayEnd}`).getTime() - new Date(`8/1/2021 ${this.dayStart}`).getTime()
+      const seconds = milliseconds / 1000.0
+      const minutes = seconds / 60.0
+      const hours = minutes / 60.0
+      return hours * 60.0 / this.intervalLength
+    },
   },
   watch: {
     routeQuery() {
@@ -496,8 +397,8 @@ export default {
     const { dayStart, dayEnd, intervalLength, showNumbers, ...urlCourses } = this.$route.query
     const courseObjs = Object.values(urlCourses)
     if (!dayStart) { return }
-    this.dayStart = parseInt(dayStart)
-    this.dayEnd = parseInt(dayEnd)
+    this.dayStart = dayStart
+    this.dayEnd = dayEnd
     this.intervalLength = parseInt(intervalLength)
     this.showNumbers = showNumbers === 'true'
     this.resetSettings()
