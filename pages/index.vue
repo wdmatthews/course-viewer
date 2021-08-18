@@ -43,6 +43,7 @@
                   v-model.number="editedIntervalLength"
                   label="Interval"
                   outlined
+                  dense
                   suffix="minutes"
                   :disabled="!isEditingSettings"
                 />
@@ -319,7 +320,7 @@ export default {
     currentDay: today.getDay(),
     ready: false,
     dayStart: '7:00',
-    dayEnd: '10:00',
+    dayEnd: '22:00',
     intervalLength: 60,
     showNumbers: false,
     actuallyShowNumbers: false,
