@@ -424,9 +424,9 @@ export default {
   mounted() {
     this.ready = true
     this.updateTime()
-    this.classTimeAlertAudio = new Audio('5minutes.wav')
-    this.classDismissedAlertAudio = new Audio('dismissed.wav')
-    this.classStartedAlertAudio = new Audio('started.wav')
+    this.classTimeAlertAudio = new Audio('5minutes.mp3')
+    this.classDismissedAlertAudio = new Audio('dismissed.mp3')
+    this.classStartedAlertAudio = new Audio('started.mp3')
     
     document.querySelectorAll('.v-calendar-daily__interval-text').forEach((interval) => {
       if (interval.innerText.length === 0) { return }
